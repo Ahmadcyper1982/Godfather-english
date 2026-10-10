@@ -1,5 +1,5 @@
 /* =======================================================================
-   عرّاب الانجليزي — محرك التطبيق
+   Godfather of English (عرّاب الانجليزي) — محرك التطبيق
    إعداد الأستاذ أحمد نور الحسين العلي — 0965266039
    ======================================================================= */
 (function () {
@@ -14,7 +14,11 @@ var CONFIG = {
   phoneShow   : '0965266039',
   unlockHash  : 2348239360,             // كود الطلاب  = 748215
   teacherHash : 2112274974,             // كود المعلم  = 139057
-  appVersion  : '1.0'
+  appVersion  : '2.0',
+  // رابط ملف التحكم عن بعد — يقرأه التطبيق عند وجود انترنت فقط
+  // الأستاذ يتحكم بهذا الملف عبر لوحة admin/index.html (أو عبر GitHub مباشرة)
+  remoteUrl   : 'https://raw.githubusercontent.com/Ahmadcyper1982/godfather-english/main/remote-config.json',
+  remoteCheckMs: 6*3600*1000   // لا نفحص أكثر من مرة كل 6 ساعات لتوفير الداتا
 };
 
 /* ---------------------------------------------------------------
@@ -23,6 +27,10 @@ var CONFIG = {
 function $(id){ return document.getElementById(id); }
 function el(tag, cls, html){ var e=document.createElement(tag); if(cls) e.className=cls; if(html!=null) e.innerHTML=html; return e; }
 function hash(s){ var h=5381,i; s=String(s); for(i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))>>>0; } return h; }
+function genStudentId(name){
+  var raw=String(name)+'|'+nowMs()+'|'+Math.random();
+  return 'GF-'+hash(raw).toString(36).toUpperCase().slice(0,5);
+}
 function setTitle(titleId, subId, main, sub){
   var t=$(titleId); if(!t) return;
   t.innerHTML = esc(main)+'<span class="sub" id="'+subId+'">'+esc(sub==null?'':sub)+'</span>';
@@ -66,6 +74,49 @@ function save(){ store('gf_student',S.student); store('gf_prog',S.prog); store('
 function markDay(){
   var d=today();
   if(S.meta.days.indexOf(d)===-1){ S.meta.days.push(d); if(S.meta.days.length>400) S.meta.days.shift(); save(); }
+}
+
+/* ---------------------------------------------------------------
+   3ب) التحكم عن بُعد (الأستاذ يتحكم بوصول أي طالب بأي وقت)
+   --------------------------------------------------------------- */
+function studentRemoteState(){
+  var cfg=S.meta.remoteCfg; if(!cfg || !S.student || !S.student.sid) return null;
+  if(cfg.globalLock) return { access:false, note:cfg.note||'' };
+  var e=cfg.students && cfg.students[S.student.sid];
+  if(!e) return null;
+  if(e.access && e.until && nowMs()>e.until) return { access:false, note:'انتهت صلاحية الوصول الممنوحة من الأستاذ.' };
+  return e;
+}
+
+function applyRemoteDecision(){
+  var st=studentRemoteState();
+  if(!st) return;
+  if(st.access===false){
+    store('gf_unlocked', false);
+    S.meta.remoteMsg = st.note || 'قام الأستاذ بإيقاف وصولك مؤقتاً. تواصل معه عبر الواتساب.';
+    save();
+    if(document.getElementById('s-lock') && !document.getElementById('s-lock').classList.contains('active')){
+      show('s-lock','found');
+    }
+    var errEl=document.getElementById('lock-err');
+    if(errEl) errEl.textContent=S.meta.remoteMsg;
+  } else if(st.access===true){
+    store('gf_unlocked', true);
+    S.meta.remoteMsg='';
+    save();
+  }
+}
+
+function remoteCheck(force){
+  if(typeof fetch!=='function') return;
+  var last=S.meta.lastRemoteCheck||0;
+  if(!force && (nowMs()-last)<CONFIG.remoteCheckMs) return;
+  fetch(CONFIG.remoteUrl+'?t='+nowMs(), {cache:'no-store'}).then(function(r){ return r && r.ok? r.json(): null; })
+    .then(function(cfg){
+      if(!cfg) return;
+      S.meta.remoteCfg=cfg; S.meta.lastRemoteCheck=nowMs(); save();
+      applyRemoteDecision();
+    }).catch(function(){ /* بلا انترنت — نعتمد على آخر قرار محفوظ */ });
 }
 
 /* ---------------------------------------------------------------
@@ -123,7 +174,7 @@ function initLock(){
   };
   $('inp-code').addEventListener('keydown', function(e){ if(e.key==='Enter') $('btn-unlock').click(); });
   $('btn-wa-code').onclick=function(){
-    openWA('السلام عليكم أستاذ أحمد 🌿\nأرغب بالحصول على كود تفعيل تطبيق «عرّاب الانجليزي».\n\nالاسم: \nالصف: ');
+    openWA('السلام عليكم أستاذ أحمد 🌿\nأرغب بالحصول على كود تفعيل تطبيق «Godfather of English».\n\nالاسم: \nالصف: ');
   };
 }
 function afterUnlock(){
@@ -139,8 +190,17 @@ function initRegister(){
     var n=$('inp-name').value.trim(), b=$('inp-branch').value, c=$('inp-city').value.trim();
     if(n.length<3){ $('reg-err').textContent='اكتب اسمك الثلاثي من فضلك'; return; }
     if(!b){ $('reg-err').textContent='اختر صفك الحالي'; return; }
-    S.student={ name:n, branch:b, city:c, since:nowMs() };
-    save(); markDay(); goHome();
+    S.student={ name:n, branch:b, city:c, since:nowMs(), sid:genStudentId(n) };
+    save(); markDay();
+    goHome();
+    setTimeout(function(){
+      modal('🆔 رقمك التعريفي',
+        '<p>هذا رقمك الخاص في التطبيق، احتفظ به وأرسله للأستاذ عبر الواتساب ليتعرف عليك ويتحكم بوصولك عند الحاجة:</p>'+
+        '<div class="code-input" style="font-size:22px;letter-spacing:.2em;background:#f1f5f9;border-radius:12px;padding:12px;text-align:center;direction:ltr">'+esc(S.student.sid)+'</div>'+
+        '<div style="height:10px"></div><button class="btn wa sm" id="sid-wa">💬 إرسال رقمي للأستاذ</button>');
+      var b=document.getElementById('sid-wa');
+      if(b) b.onclick=function(){ openWA('السلام عليكم أستاذ أحمد 🌿\nسجّلت في تطبيق «Godfather of English».\nالاسم: '+S.student.name+'\nرقمي التعريفي: '+S.student.sid); };
+    }, 350);
   };
 }
 
@@ -195,6 +255,7 @@ function skillStats(){
    --------------------------------------------------------------- */
 function goHome(){
   markDay();
+  remoteCheck(false);
   var st=overallStats();
   $('home-hello').innerHTML = 'أهلاً '+esc(S.student.name.split(' ')[0])+' 👋<span class="sub">'+
       (BRANCH_NAME[S.student.branch]||'')+'</span>';
@@ -496,9 +557,10 @@ function buildReport(){
   var since = S.meta.lastReport || S.student.since;
   var recent = S.log.filter(function(e){ return e.ts>=since; });
 
-  var t='📘 *تقرير أداء — تطبيق عرّاب الانجليزي*\n';
+  var t='📘 *تقرير أداء — Godfather of English*\n';
   t+='━━━━━━━━━━━━━━━━\n';
   t+='👤 الطالب: '+S.student.name+'\n';
+  t+='🆔 الرقم التعريفي: '+(S.student.sid||'—')+'\n';
   if(S.student.city) t+='🏫 '+S.student.city+'\n';
   t+='📚 الصف: '+(BRANCH_NAME[S.student.branch]||'')+'\n';
   t+='🗓 الفترة: من '+arDate(since)+' إلى '+arDate(nowMs())+'\n';
@@ -616,7 +678,8 @@ function teacherView(){
 
 function settingsPanel(){
   var h='<div class="box box-note"><b class="box-title">👤 بياناتي</b>'+esc(S.student.name)+'<br>'+
-        (BRANCH_NAME[S.student.branch]||'')+'</div>';
+        (BRANCH_NAME[S.student.branch]||'')+'<br>'+
+        '<span style="font-size:12.5px;opacity:.85">رقمي التعريفي: <b dir="ltr">'+esc(S.student.sid||'—')+'</b></span></div>';
   h+='<div class="field"><label>تغيير الصف</label><select id="set-branch">'+
      '<option value="g9">الصف التاسع</option><option value="sci">البكالوريا العلمي</option><option value="lit">البكالوريا الأدبي</option>'+
      '</select></div>';
@@ -666,8 +729,16 @@ function boot(){
     openWA('السلام عليكم أستاذ أحمد، معك الطالب '+(S.student?S.student.name:'')+'.\nعندي سؤال في: ');
   };
 
+  if(S.student && !S.student.sid){ S.student.sid=genStudentId(S.student.name); save(); }
+
+  applyRemoteDecision(); // طبّق آخر قرار محفوظ فوراً دون انتظار الشبكة
   if(store('gf_unlocked')) afterUnlock();
   else show('s-lock','found');
+  remoteCheck(false); // تحديث بالخلفية إن توفر انترنت
+
+  document.addEventListener('visibilitychange', function(){
+    if(!document.hidden) remoteCheck(false);
+  });
 }
 
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot);

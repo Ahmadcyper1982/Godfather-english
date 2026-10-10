@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لوحة تحكم الأستاذ — Godfather of English</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap">
+<style>
+  :root{ --brand:#0f766e; --brand-2:#115e59; --bg:#eef1f8; --card:#fff; --line:#e6e9f2; --ink:#171b2e; --ink-soft:#5b6478; --ok:#15895a; --bad:#c0291a; }
+  *{box-sizing:border-box}
+  body{font-family:"Tajawal",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:0;direction:rtl}
+  header{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;padding:18px 16px;text-align:center}
+  header h1{margin:0;font-size:19px}
+  header div.en{font-family:Georgia,serif;font-size:13px;opacity:.85;margin-top:2px;direction:ltr}
+  .wrap{max-width:720px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 3px 14px rgba(0,0,0,.06)}
+  label{display:block;font-size:13.5px;font-weight:700;color:var(--ink-soft);margin-bottom:5px}
+  input,select{width:100%;padding:11px;border:2px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit}
+  input[dir=ltr]{direction:ltr;text-align:left}
+  button{background:var(--brand);color:#fff;border:0;border-radius:11px;padding:11px 16px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+  button.ghost{background:transparent;color:var(--brand);border:2px solid var(--brand)}
+  button.bad{background:var(--bad)}
+  button.ok{background:var(--ok)}
+  button:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:10px;align-items:center;margin:8px 0}
+  .row>*{flex:1}
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:10px}
+  th,td{border:1px solid var(--line);padding:8px;text-align:center}
+  th{background:var(--brand);color:#fff}
+  .badge{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;color:#fff}
+  .badge.on{background:var(--ok)}
+  .badge.off{background:var(--bad)}
+  .muted{color:var(--ink-soft);font-size:13px}
+  .msg{padding:10px 12px;border-radius:10px;margin:10px 0;font-size:14px}
+  .msg.ok{background:#e8f6ef;color:var(--ok)}
+  .msg.err{background:#fdeceb;color:var(--bad)}
+  .hide{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔑 لوحة تحكم الأستاذ — التحكم عن بعد</h1>
+  <div class="en">Godfather of English — Remote Control Panel</div>
+</header>
+<div class="wrap">
+
+  <div class="card" id="auth-card">
+    <p class="muted">هذه اللوحة تتحكم بوصول أي طالب للتطبيق في أي لحظة — فتحاً أو إغلاقاً — من أي مكان فيه انترنت.
+    أدخل <b>مفتاح GitHub الخاص بك (Personal Access Token)</b> مرة واحدة؛ يُحفظ على جهازك فقط ولا يصل لأي شخص آخر.</p>
+    <label>GitHub Token</label>
+    <input id="pat" dir="ltr" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+    <div style="height:10px"></div>
+    <div class="row"><button id="btn-save-pat">حفظ والدخول</button></div>
+    <p class="muted">لإنشاء المفتاح: GitHub → Settings → Developer settings → Personal access tokens → Generate new token (classic) → صلاحية <b>repo</b> فقط.</p>
+  </div>
+
+  <div id="app-area" class="hide">
+    <div class="card">
+      <div class="row">
+        <label style="flex:0 0 auto;margin:0">🚨 إغلاق التطبيق على الجميع فوراً</label>
+        <select id="global-lock"><option value="false">مفعّل (الجميع يعمل بشكل طبيعي)</option><option value="true">إيقاف كل الطلاب الآن</option></select>
+      </div>
+      <button id="btn-save-global" class="ok">حفظ</button>
+      <div id="msg-global"></div>
+    </div>
+
+    <div class="card">
+      <h3>➕ إضافة / تعديل وصول طالب</h3>
+      <label>الرقم التعريفي للطالب (مثل GF-AB12X)</label>
+      <input id="sid" dir="ltr" placeholder="GF-XXXXX">
+      <div class="row">
+        <div><label>الوصول</label><select id="sid-access"><option value="true">مفتوح</option><option value="false">مغلق</option></select></div>
+        <div><label>حتى تاريخ (اختياري)</label><input id="sid-until" type="date"></div>
+      </div>
+      <label>ملاحظة (تظهر للطالب عند الإغلاق)</label>
+      <input id="sid-note" placeholder="مثال: الرجاء تسديد القسط أو التواصل معي">
+      <div style="height:10px"></div>
+      <button id="btn-save-sid">حفظ</button>
+      <div id="msg-sid"></div>
+    </div>
+
+    <div class="card">
+      <h3>📋 الطلاب المضافون حالياً</h3>
+      <table id="tbl"><thead><tr><th>الرقم</th><th>الحالة</th><th>حتى</th><th>حذف</th></tr></thead><tbody></tbody></table>
+      <p class="muted" id="empty-note">لا يوجد طلاب مضافون بعد.</p>
+    </div>
+
+    <div class="card">
+      <button class="ghost" id="btn-refresh">🔄 تحديث من GitHub</button>
+      <button class="ghost" id="btn-logout">🚪 خروج (حذف المفتاح من هذا الجهاز)</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var OWNER='Ahmadcyper1982', REPO='godfather-english', PATH='remote-config.json', BRANCH='main';
+  var API='https://api.github.com/repos/'+OWNER+'/'+REPO+'/contents/'+PATH;
+  var $=function(id){return document.getElementById(id);};
+  var cfg=null, sha=null;
+
+  function b64encode(str){ return btoa(unescape(encodeURIComponent(str))); }
+  function b64decode(str){ return decodeURIComponent(escape(atob(str))); }
+
+  function pat(){ return localStorage.getItem('gf_admin_pat')||''; }
+
+  function api(method, body){
+    return fetch(API+'?ref='+BRANCH, {
+      method:method||'GET',
+      headers:{ 'Authorization':'Bearer '+pat(), 'Accept':'application/vnd.github+json' },
+      body: body? JSON.stringify(body): undefined
+    });
+  }
+
+  function load(){
+    return api('GET').then(function(r){
+      if(!r.ok) throw new Error('فشل تحميل الملف ('+r.status+'). تحقق من صلاحية المفتاح أو من اسم المستودع.');
+      return r.json();
+    }).then(function(j){
+      sha=j.sha;
+      cfg=JSON.parse(b64decode(j.content));
+      render();
+    });
+  }
+
+  function saveCfg(msg){
+    cfg.updated=new Date().toISOString();
+    var content=b64encode(JSON.stringify(cfg,null,2));
+    return fetch(API, {
+      method:'PUT',
+      headers:{ 'Authorization':'Bearer '+pat(), 'Accept':'application/vnd.github+json' },
+      body:JSON.stringify({ message: msg||'تحديث التحكم عن بعد', content:content, sha:sha, branch:BRANCH })
+    }).then(function(r){
+      if(!r.ok) return r.json().then(function(e){ throw new Error(e.message||'فشل الحفظ'); });
+      return r.json();
+    }).then(function(j){ sha=j.content.sha; });
+  }
+
+  function render(){
+    $('global-lock').value = cfg.globalLock? 'true':'false';
+    var tb=$('tbl').querySelector('tbody'); tb.innerHTML='';
+    var ids=Object.keys(cfg.students||{});
+    $('empty-note').classList.toggle('hide', ids.length>0);
+    ids.forEach(function(id){
+      var e=cfg.students[id];
+      var tr=document.createElement('tr');
+      var badge = e.access? '<span class="badge on">مفتوح</span>' : '<span class="badge off">مغلق</span>';
+      tr.innerHTML='<td dir="ltr">'+id+'</td><td>'+badge+'</td><td>'+(e.until? new Date(e.until).toLocaleDateString('ar-EG'):'—')+'</td><td><button class="bad" data-del="'+id+'">حذف</button></td>';
+      tb.appendChild(tr);
+    });
+    tb.querySelectorAll('[data-del]').forEach(function(b){
+      b.onclick=function(){
+        var id=this.getAttribute('data-del');
+        if(!confirm('حذف الطالب '+id+' من قائمة التحكم؟')) return;
+        delete cfg.students[id];
+        saveCfg('حذف طالب '+id).then(render);
+      };
+    });
+  }
+
+  $('btn-save-pat').onclick=function(){
+    var v=$('pat').value.trim();
+    if(!v){ alert('أدخل المفتاح أولاً'); return; }
+    localStorage.setItem('gf_admin_pat', v);
+    boot();
+  };
+
+  $('btn-refresh').onclick=function(){ load(); };
+  $('btn-logout').onclick=function(){ localStorage.removeItem('gf_admin_pat'); location.reload(); };
+
+  $('btn-save-global').onclick=function(){
+    cfg.globalLock = ($('global-lock').value==='true');
+    saveCfg('تحديث الإغلاق الشامل').then(function(){
+      $('msg-global').innerHTML='<div class="msg ok">تم الحفظ ✅</div>';
+    }).catch(function(e){ $('msg-global').innerHTML='<div class="msg err">'+e.message+'</div>'; });
+  };
+
+  $('btn-save-sid').onclick=function(){
+    var id=$('sid').value.trim().toUpperCase();
+    if(!id){ alert('أدخل الرقم التعريفي للطالب'); return; }
+    cfg.students=cfg.students||{};
+    var until=$('sid-until').value? new Date($('sid-until').value+'T23:59:59').getTime(): null;
+    cfg.students[id]={ access: $('sid-access').value==='true', until: until, note: $('sid-note').value.trim() };
+    saveCfg('تحديث وصول '+id).then(function(){
+      $('msg-sid').innerHTML='<div class="msg ok">تم الحفظ ✅ — سيرى الطالب التغيير بأول اتصال بالانترنت.</div>';
+      $('sid').value=''; $('sid-until').value=''; $('sid-note').value='';
+      render();
+    }).catch(function(e){ $('msg-sid').innerHTML='<div class="msg err">'+e.message+'</div>'; });
+  };
+
+  function boot(){
+    if(!pat()){ $('auth-card').classList.remove('hide'); $('app-area').classList.add('hide'); return; }
+    $('auth-card').classList.add('hide'); $('app-area').classList.remove('hide');
+    load().catch(function(e){ alert(e.message); localStorage.removeItem('gf_admin_pat'); location.reload(); });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
