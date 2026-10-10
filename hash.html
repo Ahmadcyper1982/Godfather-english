@@ -1,0 +1,20 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>توليد بصمة الكود</title>
+<style>body{font-family:system-ui,"Segoe UI",Tahoma,sans-serif;background:#f6f7f9;color:#17202a;margin:0;padding:28px}
+.card{max-width:520px;margin:0 auto;background:#fff;border:1px solid #e3e7ec;border-radius:16px;padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+h1{font-size:20px;margin:0 0 6px}p{color:#5b6672;font-size:14.5px;line-height:1.8}
+input{width:100%;padding:12px;font-size:19px;text-align:center;letter-spacing:3px;border:2px solid #e3e7ec;border-radius:12px;box-sizing:border-box}
+.out{margin-top:16px;padding:14px;background:#e4f4f2;border-radius:12px;font-size:17px;text-align:center;font-weight:700;direction:ltr}
+code{background:#eef1f4;padding:2px 6px;border-radius:6px;direction:ltr;display:inline-block}</style></head><body>
+<div class="card">
+<h1>🔑 توليد بصمة كود جديد</h1>
+<p>اكتب الكود الذي تريده، ثم انسخ الرقم الناتج وضعه في ملف <code>www/js/app.js</code> مكان <code>unlockHash</code> (كود الطلاب) أو <code>teacherHash</code> (كود المعلم).</p>
+<input id="c" placeholder="اكتب الكود هنا" autocomplete="off">
+<div class="out" id="o">—</div>
+<p style="margin-bottom:0">أ. أحمد نور الحسين العلي — <span dir="ltr">0965266039</span></p>
+</div>
+<script>
+function hash(s){var h=5381,i;s=String(s);for(i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))>>>0;}return h;}
+var c=document.getElementById('c'),o=document.getElementById('o');
+c.oninput=function(){var v=c.value.trim();o.textContent=v?hash(v):'—';};
+</script></body></html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0b1a3a">
+<title>عرّاب الانجليزي</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body data-theme="found">
+
+<!-- ================= شاشة القفل ================= -->
+<section id="s-lock" class="screen active">
+  <div class="lock-screen">
+    <div class="brand">
+      <div class="logo">🎓</div>
+      <h1>عرّاب الانجليزي</h1>
+      <div class="en-name">THE GODFATHER OF ENGLISH</div>
+    </div>
+
+    <div class="lock-panel">
+      <h3 style="margin:0 0 4px;color:#fff;font-size:17px;text-align:center">تفعيل التطبيق</h3>
+      <p style="text-align:center;font-size:13.5px;color:#cfe0f5;margin:0 0 14px">
+        التطبيق مقفل. للحصول على كود التفعيل تواصل مع الأستاذ عبر الواتساب.
+      </p>
+
+      <div class="field">
+        <label for="inp-code">كود التفعيل</label>
+        <input id="inp-code" class="code-input" type="text" inputmode="numeric" maxlength="8" placeholder="______" autocomplete="off">
+      </div>
+      <div class="err" id="lock-err"></div>
+
+      <button class="btn accent" id="btn-unlock">🔓 فتح التطبيق</button>
+      <div style="height:10px"></div>
+      <button class="btn wa" id="btn-wa-code">💬 اطلب الكود عبر واتساب</button>
+
+      <div class="teacher-card">
+        إعداد الأستاذ<br>
+        <b>أحمد نور الحسين العلي</b><br>
+        <span class="num" dir="ltr">0965266039</span> — <span class="num" dir="ltr">+963965266039</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= تسجيل الطالب ================= -->
+<section id="s-register" class="screen">
+  <div class="topbar"><div class="topbar-row"><h1>أهلاً بك 👋<span class="sub">خطوة أخيرة قبل البدء</span></h1></div></div>
+  <div class="wrap">
+    <div class="card">
+      <h2>بياناتك</h2>
+      <p class="muted">هذه البيانات تُستخدم في تقريرك الشهري الذي يصل للأستاذ، وتبقى محفوظة على جهازك فقط.</p>
+      <div class="field">
+        <label for="inp-name">الاسم الثلاثي</label>
+        <input id="inp-name" type="text" placeholder="مثال: محمد أحمد العلي" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="inp-city">المحافظة / المدرسة (اختياري)</label>
+        <input id="inp-city" type="text" placeholder="مثال: حمص — ثانوية ابن خلدون">
+      </div>
+      <div class="field">
+        <label for="inp-branch">صفك الحالي</label>
+        <select id="inp-branch">
+          <option value="">— اختر —</option>
+          <option value="g9">الصف التاسع</option>
+          <option value="sci">البكالوريا — الفرع العلمي</option>
+          <option value="lit">البكالوريا — الفرع الأدبي</option>
+        </select>
+      </div>
+      <div class="err" id="reg-err"></div>
+      <button class="btn" id="btn-register">ابدأ رحلتك 🚀</button>
+    </div>
+    <div class="card tint">
+      <b>مسارك في التطبيق</b>
+      <ol class="steps" style="margin-bottom:0">
+        <li><b>التأسيس أولاً:</b> تبني الأساس من الصفر — الحروف، الأزمنة، المفردات.</li>
+        <li><b>قسمك الدراسي:</b> يُفتح بعد إنهاء التأسيس، ويغطي منهاجك وحدة وحدة.</li>
+        <li><b>الكتابة والامتحانات:</b> تتدرّب على المواضيع ونماذج الدورات.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= الرئيسية ================= -->
+<section id="s-home" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <h1 id="home-hello">أهلاً<span class="sub">عرّاب الانجليزي</span></h1>
+      <button class="iconbtn" id="btn-teacher" title="لوحة المعلم">🔑</button>
+      <button class="iconbtn" id="btn-settings" title="الإعدادات">⚙️</button>
+    </div>
+  </div>
+  <div class="wrap">
+
+    <div class="card">
+      <h2>📊 تقدّمك الإجمالي</h2>
+      <div class="bar"><i id="home-bar" style="width:0%"></i></div>
+      <div class="muted" id="home-bar-txt">لم تبدأ بعد</div>
+      <div class="stats">
+        <div class="stat"><span class="v" id="st-units">0</span><span class="k">وحدة مُنجزة</span></div>
+        <div class="stat"><span class="v" id="st-avg">—</span><span class="k">متوسط الاختبارات</span></div>
+        <div class="stat"><span class="v" id="st-days">0</span><span class="k">يوم دراسة</span></div>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="ico">📚</span> أقسام التطبيق</div>
+    <div class="grid" id="home-grid"></div>
+
+    <div class="sec-title"><span class="ico">📈</span> متابعة الأستاذ</div>
+    <div class="card">
+      <p style="margin-top:0">في نهاية كل شهر أرسل تقرير أدائك للأستاذ بضغطة واحدة، ليعرف نقاط قوتك وما تحتاج شرحه أكثر.</p>
+      <div id="report-due" class="box box-tip hide"><b class="box-title">⏰ حان وقت التقرير الشهري</b>مرّ شهر على آخر تقرير أرسلته. أرسل تقرير هذا الشهر الآن.</div>
+      <button class="btn wa" id="btn-send-report">📤 إرسال تقريري الشهري عبر واتساب</button>
+      <div class="btn-row">
+        <button class="btn ghost sm" id="btn-view-report" style="flex:1">👁️ معاينة التقرير</button>
+        <button class="btn ghost sm" id="btn-wa-ask" style="flex:1">💬 اسأل الأستاذ</button>
+      </div>
+    </div>
+
+    <div class="sec-title"><span class="ico">🎯</span> نقاط تحتاج تقويتها</div>
+    <div class="card" id="weak-card"><p class="muted" style="margin:0">ابدأ بحل الاختبارات وسيظهر هنا تحليل دقيق لنقاط ضعفك.</p></div>
+
+    <div class="foot">
+      <b>عرّاب الانجليزي</b><br>
+      إعداد الأستاذ: أحمد نور الحسين العلي<br>
+      للتواصل: <span class="num" dir="ltr">0965266039</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= قائمة وحدات قسم ================= -->
+<section id="s-section" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="iconbtn" data-back="s-home">→</button>
+      <h1 id="sec-title">القسم<span class="sub" id="sec-sub"></span></h1>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card">
+      <div class="bar"><i id="sec-bar" style="width:0%"></i></div>
+      <div class="muted" id="sec-bar-txt"></div>
+    </div>
+    <div id="sec-list"></div>
+    <div class="foot">أ. أحمد نور الحسين العلي — <span class="num" dir="ltr">0965266039</span></div>
+  </div>
+</section>
+
+<!-- ================= درس / وحدة ================= -->
+<section id="s-unit" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="iconbtn" data-back="s-section">→</button>
+      <h1 id="unit-title">الوحدة<span class="sub" id="unit-sub"></span></h1>
+    </div>
+  </div>
+  <div class="wrap">
+    <div id="unit-body"></div>
+    <div class="card tint center">
+      <b>جاهز للاختبار؟</b>
+      <p class="muted" style="margin:6px 0 12px">اختبار الوحدة يحدد نسبة إتقانك ويُسجَّل في تقريرك.</p>
+      <button class="btn accent" id="btn-start-quiz">📝 ابدأ اختبار الوحدة</button>
+    </div>
+    <div class="foot">أ. أحمد نور الحسين العلي — <span class="num" dir="ltr">0965266039</span></div>
+  </div>
+</section>
+
+<!-- ================= الاختبار ================= -->
+<section id="s-quiz" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="iconbtn" id="quiz-exit">→</button>
+      <h1 id="quiz-title">اختبار<span class="sub" id="quiz-sub"></span></h1>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="card" style="padding:12px 16px">
+      <div class="bar"><i id="quiz-bar" style="width:0%"></i></div>
+      <div class="muted" id="quiz-count" style="text-align:center"></div>
+    </div>
+    <div id="quiz-body"></div>
+    <button class="btn" id="btn-quiz-next">التالي ←</button>
+    <div class="spacer"></div>
+  </div>
+</section>
+
+<!-- ================= النتيجة ================= -->
+<section id="s-result" class="screen">
+  <div class="topbar"><div class="topbar-row"><h1>النتيجة<span class="sub" id="res-sub"></span></h1></div></div>
+  <div class="wrap">
+    <div class="card result-big">
+      <div class="pct" id="res-pct">0%</div>
+      <div class="lbl" id="res-lbl"></div>
+    </div>
+    <div class="card" id="res-detail"></div>
+    <div class="btn-row">
+      <button class="btn ghost" id="btn-res-review">🔍 مراجعة الأخطاء</button>
+      <button class="btn" id="btn-res-back">متابعة ←</button>
+    </div>
+    <div class="spacer"></div>
+  </div>
+</section>
+
+<!-- ================= قسم الكتابة ================= -->
+<section id="s-write" class="screen">
+  <div class="topbar">
+    <div class="topbar-row">
+      <button class="iconbtn" data-back="s-home">→</button>
+      <h1 id="wr-title">تدريب الكتابة<span class="sub" id="wr-sub"></span></h1>
+    </div>
+  </div>
+  <div class="wrap"><div id="wr-body"></div>
+    <div class="foot">أ. أحمد نور الحسين العلي — <span class="num" dir="ltr">0965266039</span></div>
+  </div>
+</section>
+
+<!-- ================= نافذة منبثقة ================= -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modal-title">عنوان</h3>
+    <div id="modal-body"></div>
+    <div style="height:12px"></div>
+    <button class="btn ghost" id="modal-close">إغلاق</button>
+  </div>
+</div>
+
+<script src="data/foundation.js"></script>
+<script src="data/grade9.js"></script>
+<script src="data/scientific.js"></script>
+<script src="data/literary.js"></script>
+<script src="data/writing.js"></script>
+<script src="data/exams.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
