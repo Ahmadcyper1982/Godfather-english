@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:          # زر تشغيل يدوي من صفحة Actions
 
+permissions:
+  contents: write   # لازمة لحفظ ملف APK داخل المستودع بعد البناء
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -68,4 +71,4 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add builds/GodfatherOfEnglish-latest.apk
           git diff --cached --quiet && echo "لا تغييرات" || git commit -m "ci: تحديث نسخة APK [skip ci]"
-          git push || true
+          git push
