@@ -53,9 +53,19 @@ jobs:
           exit $code
         shell: bash
 
-      - name: رفع ملف APK
+      - name: رفع ملف APK (artifact)
         uses: actions/upload-artifact@v4
         with:
           name: GodfatherEnglish-APK
           path: android/app/build/outputs/apk/release/*.apk
           if-no-files-found: error
+
+      - name: حفظ نسخة من APK داخل المستودع للتحميل المباشر
+        run: |
+          mkdir -p builds
+          cp android/app/build/outputs/apk/release/*.apk builds/GodfatherOfEnglish-latest.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add builds/GodfatherOfEnglish-latest.apk
+          git diff --cached --quiet && echo "لا تغييرات" || git commit -m "ci: تحديث نسخة APK [skip ci]"
+          git push || true
